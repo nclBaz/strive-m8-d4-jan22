@@ -2,15 +2,20 @@ import express from "express"
 import mongoose from "mongoose"
 import listEndpoints from "express-list-endpoints"
 import cors from "cors"
+import passport from "passport"
 import usersRouter from "./api/users/index.js"
 import { unauthorizedHandler, forbiddenHandler, catchAllHandler } from "./errorHandlers.js"
+import googleStrategy from "./auth/googleOAuth.js"
 
 const server = express()
 const port = process.env.PORT || 3001
 
+passport.use("google", googleStrategy)
+
 // *********************************** MIDDLEWARES ********************************************
 server.use(cors())
 server.use(express.json())
+server.use(passport.initialize())
 
 // ************************************ ENDPOINTS *********************************************
 server.use("/users", usersRouter)
