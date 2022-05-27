@@ -2,13 +2,14 @@ import createError from "http-errors"
 import { verifyAccessToken } from "./tools.js"
 
 export const JWTAuthMiddleware = async (req, res, next) => {
-  // 1. Check if authorization header is in the request, if it is not --> 401
-  if (!req.headers.authorization) {
-    next(createError(401, "Please provide bearer token in the authorization header!"))
+  console.log("COOKIES ", req.cookies)
+  // 1. Check if accessToken is in cookies, if it is not --> 401
+  if (!req.cookies.accessToken) {
+    next(createError(401, "Please send access token in cookies"))
   } else {
     try {
-      // 2. Extract the token from authorization header
-      const token = req.headers.authorization.replace("Bearer ", "")
+      // 2. Extract the token from cookies
+      const token = req.cookies.accessToken
 
       // 3. Verify token (verify expiration date and check signature integrity), if everything is fine we should get back the payload ({_id, role})
 

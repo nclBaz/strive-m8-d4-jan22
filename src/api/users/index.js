@@ -13,7 +13,13 @@ usersRouter.get("/googleRedirect", passport.authenticate("google", { session: fa
   // the purpose of this endpoint is to receive a response from Google, execute the google callback function and then send a response back
   try {
     const { accessToken, refreshToken } = req.user
-    res.redirect(`${process.env.FE_URL}/users?accessToken=${accessToken}&refreshToken=${refreshToken}`)
+
+    // as an alternative to url parameters we could use cookies
+    // res.redirect(`${process.env.FE_URL}/users?accessToken=${accessToken}&refreshToken=${refreshToken}`)
+
+    res.cookie("accessToken", accessToken, { httpOnly: true })
+    res.cookie("refreshToken", refreshToken, { httpOnly: true })
+    res.redirect(`${process.env.FE_URL}/users`)
   } catch (error) {
     next(error)
   }
@@ -92,7 +98,9 @@ usersRouter.post("/login", async (req, res, next) => {
       // 3. If credentials are ok --> generate an access token (JWT) and send it as a response
 
       const { accessToken, refreshToken } = await authenticateUser(user)
-      res.send({ accessToken, refreshToken })
+      res.cookie("accessToken", accessToken, { httpOnly: true })
+      res.cookie("refreshToken", refreshToken, { httpOnly: true })
+      res.send()
     } else {
       // 4. If credentials are not ok --> throw an error (401)
       next(createError(401, "Credentials are not ok!"))
