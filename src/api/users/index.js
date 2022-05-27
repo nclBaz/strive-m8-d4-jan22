@@ -98,8 +98,16 @@ usersRouter.post("/login", async (req, res, next) => {
       // 3. If credentials are ok --> generate an access token (JWT) and send it as a response
 
       const { accessToken, refreshToken } = await authenticateUser(user)
-      res.cookie("accessToken", accessToken, { httpOnly: true })
-      res.cookie("refreshToken", refreshToken, { httpOnly: true })
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "none",
+        secure: process.env.NODE_ENV === "production" ? true : false,
+      })
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "none",
+        secure: process.env.NODE_ENV === "production" ? true : false,
+      })
       res.send()
     } else {
       // 4. If credentials are not ok --> throw an error (401)
